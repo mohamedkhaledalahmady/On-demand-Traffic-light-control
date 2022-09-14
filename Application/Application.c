@@ -83,8 +83,8 @@ static void normal_mode()
     LED_ON(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A1);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
-    // Delay_5_sec();
-    _delay_ms(5000);
+    Delay_5_sec();
+    // _delay_ms(5000);
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
@@ -92,23 +92,23 @@ static void normal_mode()
     for (index = 0; index < 10; index++)
     {
         LED_Toggle(GPIO_A, GPIO_PIN_A1);
-        // Delay_half_sec();
-        _delay_ms(500);
+        Delay_half_sec();
+        // _delay_ms(500);
     }
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A1);
     LED_ON(GPIO_A, GPIO_PIN_A2);
-    // Delay_5_sec();
-    _delay_ms(5000);
+    Delay_5_sec();
+    // _delay_ms(5000);
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
     for (index = 0; index < 10; index++)
     {
         LED_Toggle(GPIO_A, GPIO_PIN_A1);
-        // Delay_half_sec();
-        _delay_ms(500);
+        Delay_half_sec();
+        // _delay_ms(500);
     }
 }
 
@@ -116,8 +116,8 @@ static void pedestrian_mode()
 {
     // do something
     LED_ON(GPIO_B, GPIO_PIN_B0);
-    // Delay_half_sec();
-    _delay_ms(500);
+    Delay_half_sec();
+    // _delay_ms(500);
 
     LED_OFF(GPIO_B, GPIO_PIN_B0);
     mode = NormalMode;
