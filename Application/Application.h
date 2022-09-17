@@ -17,4 +17,6 @@ static void Delay_5_sec();
 static void Delay_half_sec();
 static void normal_mode();
 static void pedestrian_mode();
+static uint8_t GetCarState();
+static uint8_t GetPedestrianState();
 #endif

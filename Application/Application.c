@@ -10,10 +10,12 @@ void App_Init()
     LED_Init(GPIO_A, GPIO_PIN_A0);
     LED_Init(GPIO_A, GPIO_PIN_A1);
     LED_Init(GPIO_A, GPIO_PIN_A2);
-    LED_Init(GPIO_B, GPIO_PIN_A0);
-    LED_Init(GPIO_B, GPIO_PIN_A1);
-    LED_Init(GPIO_B, GPIO_PIN_A2);
+    LED_Init(GPIO_B, GPIO_PIN_B0);
+    LED_Init(GPIO_B, GPIO_PIN_B1);
+    LED_Init(GPIO_B, GPIO_PIN_B2);
 
+    // inital
+    // LED_ON(GPIO_B, GPIO_PIN_B2);
     // Inital Button as input pin and active internal pull up resistor
     BUTTON_Init(GPIO_D, GPIO_PIN_D2);
     BUTTON_PullUp(GPIO_D, GPIO_PIN_D2);
@@ -24,7 +26,7 @@ void App_Init()
     MCUCR = 0x08; // Configure INT0 active low level triggered and INT1 as falling edge
     sei();
 }
-static void Delay_5_sec()
+void Delay_5_sec()
 {
     uint8_t i = 0;
     // Timer start
@@ -44,7 +46,7 @@ static void Delay_5_sec()
     TCCR0 = 0x00;
 }
 
-static void Delay_half_sec()
+void Delay_half_sec()
 {
     uint8_t i = 0;
     // Timer start
@@ -64,68 +66,128 @@ static void Delay_half_sec()
     TCCR0 = 0x00;
 }
 
+uint8_t GetCarState()
+{
+    uint8_t i;
+    for (i = 0; i < 3; i++)
+        if (GPIO_GetPin(GPIO_A, i))
+            return i;
+    return YELLOW;
+}
+
+uint8_t GetPedestrianState()
+{
+    uint8_t i;
+    for (i = 0; i < 3; i++)
+        if (GPIO_GetPin(GPIO_B, i))
+            return i;
+    return YELLOW;
+}
+
 ISR(INT0_vect)
 {
-    // LED_ON(GPIO_B, GPIO_PIN_B0);
-    // Delay_5_sec();
-    // mode = PedestrianMode;
-    // TCCR0 |= 1 << 0 | 1 << 2; // clk/1024
-    // TCNT0 = 0x0c;
-    // TCCR0 = 0x00;
-    Timer_Init();
-
     pedestrian_mode();
+    TCCR0 |= 1 << 0 | 1 << 2; // clk/1024 (Timer ON)
 }
-static void normal_mode()
+void normal_mode()
 {
-    LED_OFF(GPIO_B, GPIO_PIN_B0);
-
     LED_ON(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A1);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
+
+    LED_OFF(GPIO_B, GPIO_PIN_B0);
+    LED_OFF(GPIO_B, GPIO_PIN_B1);
+    LED_ON(GPIO_B, GPIO_PIN_B2);
     Delay_5_sec();
-    // _delay_ms(5000);
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
+    LED_OFF(GPIO_B, GPIO_PIN_B0);
+    LED_OFF(GPIO_B, GPIO_PIN_B2);
     uint8_t index = 0;
     for (index = 0; index < 10; index++)
     {
         LED_Toggle(GPIO_A, GPIO_PIN_A1);
+        LED_Toggle(GPIO_B, GPIO_PIN_B1);
         Delay_half_sec();
-        // _delay_ms(500);
     }
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A1);
     LED_ON(GPIO_A, GPIO_PIN_A2);
+
+    LED_ON(GPIO_B, GPIO_PIN_B0);
+    LED_OFF(GPIO_B, GPIO_PIN_B1);
+    LED_OFF(GPIO_B, GPIO_PIN_B2);
+
     Delay_5_sec();
-    // _delay_ms(5000);
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
+    LED_OFF(GPIO_B, GPIO_PIN_B0);
+    LED_OFF(GPIO_B, GPIO_PIN_B2);
     for (index = 0; index < 10; index++)
     {
         LED_Toggle(GPIO_A, GPIO_PIN_A1);
+        LED_Toggle(GPIO_B, GPIO_PIN_B1);
         Delay_half_sec();
-        // _delay_ms(500);
     }
 }
 
-static void pedestrian_mode()
+void pedestrian_mode()
 {
     // do something
-    LED_ON(GPIO_B, GPIO_PIN_B0);
-    Delay_half_sec();
-    // _delay_ms(500);
+    if (GetCarState() == RED)
+    {
+        // LED_ON(GPIO_A, GPIO_PIN_A2);  // red car on
+        LED_ON(GPIO_B, GPIO_PIN_B0);  // green pedestrian on
+        LED_OFF(GPIO_B, GPIO_PIN_B1); // yellow pedestrian off
+        LED_OFF(GPIO_B, GPIO_PIN_B2); // red pedestrian off
 
-    LED_OFF(GPIO_B, GPIO_PIN_B0);
+        Delay_5_sec();
+        LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+    }
+    else if (GetCarState() == GREEN || GetCarState() == YELLOW)
+    {
+        LED_ON(GPIO_B, GPIO_PIN_B2);  // red pedestrian on
+        LED_OFF(GPIO_A, GPIO_PIN_A0); // green car off
+        LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+        // LED_OFF(GPIO_A, GPIO_PIN_A0); // green car off
+
+        uint8_t index = 0; // both yellow blink
+        for (index = 0; index < 10; index++)
+        {
+            LED_Toggle(GPIO_A, GPIO_PIN_A1);
+            LED_Toggle(GPIO_B, GPIO_PIN_B1);
+            Delay_half_sec();
+        }
+
+        LED_ON(GPIO_A, GPIO_PIN_A2);  // red car on
+        LED_ON(GPIO_B, GPIO_PIN_B0);  // green pedestrian on
+        LED_OFF(GPIO_B, GPIO_PIN_B1); // yellow pedestrian off
+        LED_OFF(GPIO_B, GPIO_PIN_B2); // red pedestrian off
+        Delay_5_sec();
+    }
+
+    // At the end of the two states
+
+    uint8_t index = 0; // both yellow blink
+    for (index = 0; index < 10; index++)
+    {
+        LED_Toggle(GPIO_A, GPIO_PIN_A1);
+        LED_Toggle(GPIO_B, GPIO_PIN_B1);
+        Delay_half_sec();
+    }
+
+    LED_OFF(GPIO_B, GPIO_PIN_B0); // green pedestrian off
+    LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+
+    LED_ON(GPIO_A, GPIO_PIN_A0);  // green car on
+    LED_OFF(GPIO_B, GPIO_PIN_B2); // red pedestrian off
+
     mode = NormalMode;
 }
 void App_Start()
 {
-    // if (mode == NormalMode)
     normal_mode();
-    // else if (mode == PedestrianMode)
-    // pedestrian_mode();
 }
