@@ -1,46 +1,28 @@
 #include "Application\Application.h"
-#include "MCAL/Timer/Timer.h"
-#include <avr\interrupt.h>
+// #include "MCAL/Timer/Timer.h"
+// #include <avr\interrupt.h>
+// #include "MCAL/GPIO/GPIO.h"
+// #include "ECUAL\Button\Button.h"
+// #include "ECUAL\LED\LED.h"
 
 #define F_CPU 1000000UL
 
-// void init()
+// ISR(INT0_vect)
 // {
-//     // Timer Mode
-//     TCCR0 = 0x00; // normal mode, stopped
-//     // set timer start value
-//     TCNT0 = 0x0c;
-//     // Timer start
-//     TCCR0 |= 1 << 0 | 1 << 2; // clk/1024
-//                               // TCCR0 |= 1 << 0; // clk
+// LED_ON(GPIO_A, GPIO_PIN_A0);
+// LED_Toggle(GPIO_A, GPIO_PIN_A0);
 // }
-// void delay_1_ms()
-// {
-//     uint8_t i = 0;
-//     // Timer start
-//     TCCR0 |= 1 << 0 | 1 << 2; // clk/1024
-//     // TCCR0 |= 1 << 0; // clk
-
-//     while (i < 20)
-//     {
-//         // stop timer after 256 us
-//         while ((TIFR & (1 << 0)) == 0)
-//             ;
-//         TIFR |= (1 << 0);
-//         TCNT0 = 0x0c;
-//         i++;
-//     }
-//     i = 0;
-//     TCCR0 = 0x00;
-// }
-
 
 int main()
 {
-    App_Init();
-
+    uint8_t state1 = LED_Init(GPIO_A, GPIO_PIN_A0);
+    uint8_t state2 = BUTTON_Init(GPIO_D, GPIO_PIN_D2);
+    uint8_t state3 = BUTTON_PullUp(GPIO_D, GPIO_PIN_D2);
     while (1)
     {
-        App_Start();
+        if (BUTTON_State(GPIO_D, GPIO_PIN_D2) == 0)
+            LED_ON(GPIO_A, GPIO_PIN_A0);
+        else
+            LED_OFF(GPIO_A, GPIO_PIN_A0);
     }
 }

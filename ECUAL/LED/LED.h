@@ -13,9 +13,9 @@
 #define Fail 0
 
 // Functions
-uint8_t LED_Init(uint8_t, uint8_t);
-uint8_t LED_ON(uint8_t, uint8_t);
-uint8_t LED_OFF(uint8_t, uint8_t);
-uint8_t LED_Toggle(uint8_t, uint8_t);
-uint8_t LED_Blink(uint8_t, uint8_t, uint8_t);
+uint8_t LED_Init(uint8_t, uint8_t);           // calling GPIO_Init from MCAL
+uint8_t LED_ON(uint8_t, uint8_t);             // calling GPIO_WritePin from MCAL
+uint8_t LED_OFF(uint8_t, uint8_t);            // calling GPIO_WritePin from MCAL
+uint8_t LED_Toggle(uint8_t, uint8_t);         // calling GPIO_Toggle from MCAL
+uint8_t LED_Blink(uint8_t, uint8_t, uint8_t); // calling LED_Toggle with delays from MCAL
 #endif

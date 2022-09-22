@@ -22,8 +22,8 @@ void App_Init()
 
     // Inital for timer in normal mode
     Timer_Init();
-    GICR = 0xc0;  // Enable External Interrupts INT0 and INT1
-    MCUCR = 0x08; // Configure INT0 active low level triggered and INT1 as falling edge
+    GICR = 0x40;  // Enable External Interrupts INT0
+    MCUCR = 0x03; // Configure INT0 The rising edge of INT0 generates an interrupt request.
     sei();
 }
 void Delay_5_sec()
@@ -91,6 +91,9 @@ ISR(INT0_vect)
 }
 void normal_mode()
 {
+    PORTA = 0xF0;
+    PORTB = 0xF0;
+
     LED_ON(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A1);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
@@ -124,6 +127,7 @@ void normal_mode()
 
     LED_OFF(GPIO_A, GPIO_PIN_A0);
     LED_OFF(GPIO_A, GPIO_PIN_A2);
+
     LED_OFF(GPIO_B, GPIO_PIN_B0);
     LED_OFF(GPIO_B, GPIO_PIN_B2);
     for (index = 0; index < 10; index++)
@@ -146,6 +150,7 @@ void pedestrian_mode()
 
         Delay_5_sec();
         LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+        LED_OFF(GPIO_B, GPIO_PIN_B0); // green pedestrian off
     }
     else if (GetCarState() == GREEN || GetCarState() == YELLOW)
     {
