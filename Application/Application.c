@@ -87,6 +87,9 @@ uint8_t GetPedestrianState()
 ISR(INT0_vect)
 {
     pedestrian_mode();
+    PORTA = 0x00;
+    PORTB = 0x00;
+
     TCCR0 |= 1 << 0 | 1 << 2; // clk/1024 (Timer ON)
 }
 void normal_mode()
@@ -157,6 +160,8 @@ void pedestrian_mode()
         LED_ON(GPIO_B, GPIO_PIN_B2);  // red pedestrian on
         LED_OFF(GPIO_A, GPIO_PIN_A0); // green car off
         LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+        LED_OFF(GPIO_B, GPIO_PIN_B2); // red pedestrian off
+
         // LED_OFF(GPIO_A, GPIO_PIN_A0); // green car off
 
         uint8_t index = 0; // both yellow blink
@@ -172,6 +177,8 @@ void pedestrian_mode()
         LED_OFF(GPIO_B, GPIO_PIN_B1); // yellow pedestrian off
         LED_OFF(GPIO_B, GPIO_PIN_B2); // red pedestrian off
         Delay_5_sec();
+        LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
+        LED_OFF(GPIO_B, GPIO_PIN_B0); // green pedestrian off
     }
 
     // At the end of the two states
@@ -185,6 +192,8 @@ void pedestrian_mode()
     }
 
     LED_OFF(GPIO_B, GPIO_PIN_B0); // green pedestrian off
+    LED_OFF(GPIO_B, GPIO_PIN_B1); // yellow pedestrian off
+    LED_OFF(GPIO_A, GPIO_PIN_A1); // yellow car off
     LED_OFF(GPIO_A, GPIO_PIN_A2); // red car off
 
     LED_ON(GPIO_A, GPIO_PIN_A0);  // green car on
